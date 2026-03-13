@@ -41,8 +41,8 @@ module OpenCode.Types (
 )
 where
 
-import Data.Aeson (FromJSON (..), Options (..), ToJSON (..), Value, defaultOptions, genericParseJSON, genericToJSON, withObject, (.:), (.:?))
-import Data.Map.Strict (Map)
+import Data.Aeson (FromJSON (..), FromJSONKey, Options (..), ToJSON (..), ToJSONKey, Value, defaultOptions, genericParseJSON, genericToJSON, withObject, (.:), (.:?))
+import Data.Map.Strict qualified as Map
 import Web.HttpApiData (FromHttpApiData (..), ToHttpApiData (..))
 
 jsonOptions :: Options
@@ -66,7 +66,7 @@ newtype ProjectID = ProjectID {unProjectID :: Text}
 -- | A provider identifier (e.g., @openai@, @anthropic@).
 newtype ProviderID = ProviderID {unProviderID :: Text}
   deriving stock (Show, Eq, Generic)
-  deriving newtype (IsString, Ord, ToString, ToText, FromJSON, ToJSON)
+  deriving newtype (IsString, Ord, ToString, ToText, FromJSON, ToJSON, FromJSONKey, ToJSONKey)
 
 -- | A part identifier.
 newtype PartID = PartID {unPartID :: Text}
@@ -417,7 +417,7 @@ data ProvidersResponse = ProvidersResponse
   -- ^ All available providers.
   , connected :: Maybe [ProviderID]
   -- ^ IDs of connected providers.
-  , defaultModel :: Maybe (Map ProviderID ModelID)
+  , defaultModel :: Maybe (Map.Map ProviderID ModelID)
   -- ^ Default model per provider.
   }
   deriving stock (Show, Eq, Generic)
