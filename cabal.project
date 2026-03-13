@@ -1,0 +1,10 @@
+packages:
+  packages/opencode
+  packages/example
+
+multi-repl: true
+tests: True
+optimization: False
+
+package *
+  ghc-options: -Werror
