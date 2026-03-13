@@ -39,7 +39,7 @@ module OpenCode.Types
   )
 where
 
-import Data.Aeson (FromJSON(..), ToJSON(..), genericParseJSON, genericToJSON, (.:), (.:?), withObject, Options(..), defaultOptions, Value, withText)
+import Data.Aeson (FromJSON(..), ToJSON(..), genericParseJSON, genericToJSON, (.:), (.:?), withObject, Options(..), defaultOptions, Value)
 import Web.HttpApiData (ToHttpApiData(..), FromHttpApiData(..))
 
 jsonOptions :: Options
@@ -48,62 +48,32 @@ jsonOptions = defaultOptions { fieldLabelModifier = \x -> x }
 -- | A session identifier (e.g., @ses_xxx@).
 newtype SessionID = SessionID { unSessionID :: Text }
   deriving stock (Show, Eq, Generic)
-  deriving newtype (IsString, ToHttpApiData, FromHttpApiData)
-
-instance FromJSON SessionID where
-  parseJSON = withText "SessionID" (pure . SessionID)
-instance ToJSON SessionID where
-  toJSON (SessionID t) = toJSON t
+  deriving newtype (IsString, ToString, ToText, ToHttpApiData, FromHttpApiData, FromJSON, ToJSON)
 
 -- | A message identifier (e.g., @msg_xxx@).
 newtype MessageID = MessageID { unMessageID :: Text }
   deriving stock (Show, Eq, Generic)
-  deriving newtype (IsString)
-
-instance FromJSON MessageID where
-  parseJSON = withText "MessageID" (pure . MessageID)
-instance ToJSON MessageID where
-  toJSON (MessageID t) = toJSON t
+  deriving newtype (IsString, ToString, ToText, FromJSON, ToJSON)
 
 -- | A project identifier.
 newtype ProjectID = ProjectID { unProjectID :: Text }
   deriving stock (Show, Eq, Generic)
-  deriving newtype (IsString)
-
-instance FromJSON ProjectID where
-  parseJSON = withText "ProjectID" (pure . ProjectID)
-instance ToJSON ProjectID where
-  toJSON (ProjectID t) = toJSON t
+  deriving newtype (IsString, ToString, ToText, FromJSON, ToJSON)
 
 -- | A provider identifier (e.g., @openai@, @anthropic@).
 newtype ProviderID = ProviderID { unProviderID :: Text }
   deriving stock (Show, Eq, Generic)
-  deriving newtype (IsString)
-
-instance FromJSON ProviderID where
-  parseJSON = withText "ProviderID" (pure . ProviderID)
-instance ToJSON ProviderID where
-  toJSON (ProviderID t) = toJSON t
+  deriving newtype (IsString, ToString, ToText, FromJSON, ToJSON)
 
 -- | A part identifier.
 newtype PartID = PartID { unPartID :: Text }
   deriving stock (Show, Eq, Generic)
-  deriving newtype (IsString)
-
-instance FromJSON PartID where
-  parseJSON = withText "PartID" (pure . PartID)
-instance ToJSON PartID where
-  toJSON (PartID t) = toJSON t
+  deriving newtype (IsString, ToString, ToText, FromJSON, ToJSON)
 
 -- | A workspace identifier.
 newtype WorkspaceID = WorkspaceID { unWorkspaceID :: Text }
   deriving stock (Show, Eq, Generic)
-  deriving newtype (IsString)
-
-instance FromJSON WorkspaceID where
-  parseJSON = withText "WorkspaceID" (pure . WorkspaceID)
-instance ToJSON WorkspaceID where
-  toJSON (WorkspaceID t) = toJSON t
+  deriving newtype (IsString, ToString, ToText, FromJSON, ToJSON)
 
 -- | Server health status.
 newtype Health = Health
