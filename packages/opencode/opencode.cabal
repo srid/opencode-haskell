@@ -1,13 +1,15 @@
 cabal-version: 2.4
 name:          opencode
-version:       0.1.0.0
+version:       0.1.0.1
 license:       MIT
 copyright:     2026 Sridhar Ratnakumar
 maintainer:    srid@srid.ca
 author:        Sridhar Ratnakumar
 category:      Web
-homepage:      https://github.com/anomalyco/opencode
+homepage:      https://github.com/srid/opencode-haskell
 synopsis:      Haskell client library for OpenCode server API
+extra-source-files:
+  CHANGELOG.md
 
 common shared
   ghc-options:
