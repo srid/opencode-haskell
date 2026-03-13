@@ -58,11 +58,13 @@ main = Utf8.withUtf8 $ do
     pure $ fromRight [] sess
 
   let byProject = Map.fromListWith (++) [(s.projectID, [s]) | s <- allSessions]
+      projectPaths = Map.fromList [(p.id, p.worktree) | p <- projects]
 
   if Map.null byProject
     then putTextLn "No sessions found."
     else forM_ (Map.toList byProject) $ \(pid, sess) -> do
-      putTextLn $ "\n[" <> toText pid <> "]"
+      let path = fromMaybe "?" $ Map.lookup pid projectPaths
+      putTextLn $ "\n[" <> toText pid <> "] " <> toText path
       forM_ sess $ \s ->
         putTextLn $ "  " <> toText (s.id) <> " - " <> s.title
 
