@@ -17,6 +17,7 @@ module OpenCode.Types (
   ProviderID (..),
   PartID (..),
   WorkspaceID (..),
+  ModelID (..),
 
   -- * Core types
   Health (..),
@@ -73,6 +74,11 @@ newtype PartID = PartID {unPartID :: Text}
 
 -- | A workspace identifier.
 newtype WorkspaceID = WorkspaceID {unWorkspaceID :: Text}
+  deriving stock (Show, Eq, Generic)
+  deriving newtype (IsString, ToString, ToText, FromJSON, ToJSON)
+
+-- | A model identifier (e.g., @litellm/glm-latest@, @openai/gpt-4@).
+newtype ModelID = ModelID {unModelID :: Text}
   deriving stock (Show, Eq, Generic)
   deriving newtype (IsString, ToString, ToText, FromJSON, ToJSON)
 
@@ -353,7 +359,7 @@ instance ToJSON SessionCreateInput where
 data Project = Project
   { id :: ProjectID
   -- ^ Project ID.
-  , worktree :: Text
+  , worktree :: FilePath
   -- ^ Path to the worktree.
   , vcs :: Maybe Text
   -- ^ Version control system (e.g., @\"git\"@).
@@ -371,7 +377,7 @@ instance ToJSON Project where
 
 -- | Server configuration.
 newtype Config = Config
-  { model :: Maybe Text
+  { model :: Maybe ModelID
   -- ^ The configured model ID.
   }
   deriving stock (Show, Eq, Generic)
@@ -410,7 +416,7 @@ data ProvidersResponse = ProvidersResponse
   -- ^ All available providers.
   , connected :: Maybe [Provider]
   -- ^ Connected providers.
-  , defaultModel :: Maybe Text
+  , defaultModel :: Maybe ModelID
   -- ^ Default model ID.
   }
   deriving stock (Show, Eq, Generic)

@@ -20,35 +20,37 @@ import Servant.Client (BaseUrl (..), ClientEnv, ClientError, Scheme (..), client
 
 import OpenCode.Types
 
+-- | Health check endpoint.
 type HealthAPI = "global" :> "health" :> Get '[JSON] Health
 
-type SessionListAPI = "session" :> QueryParam "directory" Text :> Get '[JSON] [Session]
+-- | Sub-routes for a specific session ID.
+type SessionMemberAPI =
+  Get '[JSON] Session
+    :<|> Delete '[JSON] Bool
+    :<|> "message" :> QueryParam "directory" Text :> ReqBody '[JSON] MessageInput :> Post '[JSON] MessageResponse
 
-type SessionCreateAPI = "session" :> QueryParam "directory" Text :> ReqBody '[JSON] SessionCreateInput :> Post '[JSON] Session
+-- | Grouped Session routes.
+type SessionAPI =
+  QueryParam "directory" Text :> Get '[JSON] [Session]
+    :<|> QueryParam "directory" Text :> ReqBody '[JSON] SessionCreateInput :> Post '[JSON] Session
+    :<|> Capture "sessionID" SessionID :> QueryParam "directory" Text :> SessionMemberAPI
 
-type SessionGetAPI = "session" :> Capture "sessionID" SessionID :> QueryParam "directory" Text :> Get '[JSON] Session
+-- | Grouped Project routes.
+type ProjectAPI =
+  Get '[JSON] [Project]
+    :<|> "current" :> Get '[JSON] Project
 
-type SessionDeleteAPI = "session" :> Capture "sessionID" SessionID :> QueryParam "directory" Text :> Delete '[JSON] Bool
-
-type MessageAPI = "session" :> Capture "sessionID" SessionID :> "message" :> QueryParam "directory" Text :> ReqBody '[JSON] MessageInput :> Post '[JSON] MessageResponse
-
-type ProjectListAPI = "project" :> Get '[JSON] [Project]
-
-type ProjectCurrentAPI = "project" :> "current" :> Get '[JSON] Project
-
+-- | Server configuration endpoint.
 type ConfigAPI = "config" :> Get '[JSON] Config
 
+-- | Provider listing endpoint.
 type ProviderAPI = "provider" :> Get '[JSON] ProvidersResponse
 
+-- | Combined OpenCode API.
 type OpenCodeAPI =
   HealthAPI
-    :<|> SessionListAPI
-    :<|> SessionCreateAPI
-    :<|> SessionGetAPI
-    :<|> SessionDeleteAPI
-    :<|> MessageAPI
-    :<|> ProjectListAPI
-    :<|> ProjectCurrentAPI
+    :<|> "session" :> SessionAPI
+    :<|> "project" :> ProjectAPI
     :<|> ConfigAPI
     :<|> ProviderAPI
 
@@ -111,13 +113,13 @@ mkClient host port = do
   let baseUrl = BaseUrl Http (toString host) port ""
       env = mkClientEnv manager baseUrl
       ( healthH
-          :<|> sessionListH
-          :<|> sessionCreateH
-          :<|> sessionGetH
-          :<|> sessionDeleteH
-          :<|> messageH
-          :<|> projectListH
-          :<|> projectCurrentH
+          :<|> ( sessionListH
+                   :<|> sessionCreateH
+                   :<|> sessionMemberH
+                 )
+          :<|> ( projectListH
+                   :<|> projectCurrentH
+                 )
           :<|> configH
           :<|> providerH
         ) = client apiProxy
@@ -126,9 +128,15 @@ mkClient host port = do
       { getHealth = runClientM healthH env
       , listSessions = \dir -> runClientM (sessionListH dir) env
       , createSession = \dir input -> runClientM (sessionCreateH dir input) env
-      , getSession = \sid dir -> runClientM (sessionGetH sid dir) env
-      , deleteSession = \sid dir -> runClientM (sessionDeleteH sid dir) env
-      , sendMessage = \sid dir input -> runClientM (messageH sid dir input) env
+      , getSession = \sid dir ->
+          let (getH :<|> _ :<|> _) = sessionMemberH sid dir
+           in runClientM getH env
+      , deleteSession = \sid dir ->
+          let (_ :<|> deleteH :<|> _) = sessionMemberH sid dir
+           in runClientM deleteH env
+      , sendMessage = \sid dir input ->
+          let (_ :<|> _ :<|> msgH) = sessionMemberH sid dir
+           in runClientM (msgH dir input) env
       , listProjects = runClientM projectListH env
       , getCurrentProject = runClientM projectCurrentH env
       , getConfig = runClientM configH env
