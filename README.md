@@ -1,5 +1,7 @@
 # opencode-haskell
 
+[![Hackage](https://img.shields.io/hackage/v/opencode.svg)](https://hackage.haskell.org/package/opencode)
+
 Haskell client library for [OpenCode](https://github.com/anomalyco/opencode) server API.
 
 ## Usage
