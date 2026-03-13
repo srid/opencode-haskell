@@ -85,8 +85,8 @@ data OpenCodeClient = OpenCodeClient
   -- ^ Get a session by ID. The @FilePath@ is the working directory context.
   , deleteSession :: SessionID -> Maybe FilePath -> IO (Either ClientError Bool)
   -- ^ Delete a session by ID. The @FilePath@ is the working directory context.
-  , sendMessage :: SessionID -> Maybe FilePath -> MessageInput -> IO (Either ClientError MessageResponse)
-  {- ^ Send a message to a session.
+  , promptSession :: SessionID -> Maybe FilePath -> MessageInput -> IO (Either ClientError MessageResponse)
+  {- ^ Send a prompt to a session and get AI response.
 
   The @FilePath@ argument is the working directory context for the request.
   Pass 'Nothing' to use the session's existing directory.
@@ -139,7 +139,7 @@ mkClient host port = do
       , deleteSession = \sid dir ->
           let (_ :<|> deleteH :<|> _) = sessionMemberH sid dir
            in runClientM deleteH env
-      , sendMessage = \sid dir input ->
+      , promptSession = \sid dir input ->
           let (_ :<|> _ :<|> msgH) = sessionMemberH sid dir
            in runClientM (msgH dir input) env
       , listProjects = runClientM projectListH env

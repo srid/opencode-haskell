@@ -2,7 +2,15 @@
 
 ## Changelog
 
-All PRs must update the CHANGELOG.md file with a description of changes under the appropriate version section.
+All PRs must update the `packages/opencode/CHANGELOG.md` file with a description of changes under the appropriate version section.
+
+Only document user-facing changes (API additions/changes/breaking changes, bug fixes). Do not document internal improvements like documentation, refactoring, or test additions.
+
+## Version
+
+All PRs must increment the version in `packages/opencode/opencode.cabal` appropriately.
+
+Only increment the version if the changelog has no "Unreleased" section for the latest version. When creating a new version entry in the changelog, mark it as `[Unreleased]` to allow subsequent PRs to add entries before release.
 
 ## Example
 
@@ -17,3 +25,5 @@ When adding new API endpoints, update the example accordingly.
 ## Type Accuracy
 
 Types in `OpenCode.Types` must match the actual JSON from the OpenCode server API. If parsing fails, check the actual API response with curl and update types accordingly.
+
+All type fields must have Haddock documentation comments explaining their purpose.

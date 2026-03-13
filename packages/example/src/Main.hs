@@ -79,7 +79,7 @@ main = Utf8.withUtf8 $ do
 
   putTextLn "\n--- Send Message ---"
   putTextLn "Sending: 'What is 2+2? Answer briefly.'"
-  response <- onError =<< sendMessage c (session.id) Nothing (MessageInput [textPartInput "What is 2+2? Answer briefly."])
+  response <- onError =<< promptSession c (session.id) Nothing (MessageInput [textPartInput "What is 2+2? Answer briefly."])
   putTextLn "Response:"
   forM_ response.parts $ \case
     PartText tp -> putTextLn $ "  " <> tp.text
