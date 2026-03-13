@@ -1,7 +1,11 @@
 module Main where
 
+import Data.Map.Strict qualified as Map
 import Main.Utf8 qualified as Utf8
 import OpenCode
+
+onError :: (Show e) => Either e a -> IO a
+onError = either (fail . show) pure
 
 main :: IO ()
 main = Utf8.withUtf8 $ do
@@ -22,36 +26,61 @@ main = Utf8.withUtf8 $ do
   c <- mkClient host port
 
   putTextLn "\n--- Health Check ---"
-  healthResult <- getHealth c
-  case healthResult of
-    Left err -> fail $ "Health check failed: " <> show err
-    Right health -> putTextLn $ "Server health: " <> show health
+  health <- onError =<< getHealth c
+  putTextLn $ "Server health: " <> show health
 
-  putTextLn "\n--- Sending a prompt to the LLM ---"
-  putTextLn "Creating a new session..."
-  sessionResult <- createSession c Nothing (SessionCreateInput (Just "Haskell client test") Nothing)
-  session <- case sessionResult of
-    Left err -> fail $ "Failed to create session: " <> show err
-    Right s -> pure s
+  putTextLn "\n--- Config ---"
+  cfg <- onError =<< getConfig c
+  putTextLn $ "Model: " <> show cfg.model
 
+  putTextLn "\n--- Providers ---"
+  providers <- onError =<< listProviders c
+  putTextLn $ "Default model: " <> show providers.defaultModel
+  putTextLn "Connected providers:"
+  case providers.connected of
+    Nothing -> putTextLn "  (none)"
+    Just conns -> forM_ conns $ \p ->
+      putTextLn $ "  " <> toText (p.id) <> " (" <> p.name <> ")"
+
+  putTextLn "\n--- Projects ---"
+  projects <- onError =<< listProjects c
+  putTextLn $ "Found " <> show (length projects) <> " projects:"
+  forM_ projects $ \p ->
+    putTextLn $ "  " <> toText (p.id) <> " -> " <> toText p.worktree
+
+  putTextLn "\n--- Current Project ---"
+  currentProj <- onError =<< getCurrentProject c
+  putTextLn $ "Current: " <> toText (currentProj.id) <> " at " <> toText currentProj.worktree
+
+  putTextLn "\n--- Sessions by Project ---"
+  sessions <- onError =<< listSessions c Nothing
+  let byProject = Map.fromListWith (++) [(s.projectID, [s]) | s <- sessions]
+
+  if Map.null byProject
+    then putTextLn "No sessions found."
+    else forM_ (Map.toList byProject) $ \(pid, sess) -> do
+      putTextLn $ "\n[" <> toText pid <> "]"
+      forM_ sess $ \s ->
+        putTextLn $ "  " <> toText (s.id) <> " - " <> s.title
+
+  putTextLn "\n--- Create Session & Send Message ---"
+  session <- onError =<< createSession c Nothing (SessionCreateInput (Just "Haskell client example") Nothing)
   putTextLn $ "Created session: " <> toText (session.id)
-  putTextLn "Sending prompt: 'What is 2+2? Answer briefly.'"
-  msgResult <- sendMessage c session.id Nothing (MessageInput [textPartInput "What is 2+2? Answer briefly."])
-  response <- case msgResult of
-    Left err -> fail $ "Failed to send message: " <> show err
-    Right r -> pure r
 
-  putTextLn "Response received:"
+  putTextLn "\n--- Get Session ---"
+  session' <- onError =<< getSession c (session.id) Nothing
+  putTextLn $ "Session title: " <> session'.title
+
+  putTextLn "\n--- Send Message ---"
+  putTextLn "Sending: 'What is 2+2? Answer briefly.'"
+  response <- onError =<< sendMessage c (session.id) Nothing (MessageInput [textPartInput "What is 2+2? Answer briefly."])
+  putTextLn "Response:"
   forM_ response.parts $ \case
     PartText tp -> putTextLn $ "  " <> tp.text
     PartOther _ -> pass
 
-  putTextLn "\n--- Cleaning up ---"
-  putTextLn $ "Deleting session: " <> toText (session.id)
-  deleteResult <- deleteSession c session.id Nothing
-  case deleteResult of
-    Left err -> putTextLn $ "Warning: Failed to delete session: " <> show err
-    Right True -> putTextLn "Session deleted successfully"
-    Right False -> putTextLn "Session deletion returned false"
+  putTextLn "\n--- Delete Session ---"
+  deleted <- onError =<< deleteSession c (session.id) Nothing
+  putTextLn $ "Deleted session: " <> toText (session.id) <> " (" <> show deleted <> ")"
 
   putTextLn "\nDone!"

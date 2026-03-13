@@ -50,37 +50,37 @@ jsonOptions = defaultOptions {fieldLabelModifier = Prelude.id}
 -- | A session identifier (e.g., @ses_xxx@).
 newtype SessionID = SessionID {unSessionID :: Text}
   deriving stock (Show, Eq, Generic)
-  deriving newtype (IsString, ToString, ToText, ToHttpApiData, FromHttpApiData, FromJSON, ToJSON)
+  deriving newtype (IsString, Ord, ToString, ToText, ToHttpApiData, FromHttpApiData, FromJSON, ToJSON)
 
 -- | A message identifier (e.g., @msg_xxx@).
 newtype MessageID = MessageID {unMessageID :: Text}
   deriving stock (Show, Eq, Generic)
-  deriving newtype (IsString, ToString, ToText, FromJSON, ToJSON)
+  deriving newtype (IsString, Ord, ToString, ToText, FromJSON, ToJSON)
 
 -- | A project identifier.
 newtype ProjectID = ProjectID {unProjectID :: Text}
   deriving stock (Show, Eq, Generic)
-  deriving newtype (IsString, ToString, ToText, FromJSON, ToJSON)
+  deriving newtype (IsString, Ord, ToString, ToText, FromJSON, ToJSON)
 
 -- | A provider identifier (e.g., @openai@, @anthropic@).
 newtype ProviderID = ProviderID {unProviderID :: Text}
   deriving stock (Show, Eq, Generic)
-  deriving newtype (IsString, ToString, ToText, FromJSON, ToJSON)
+  deriving newtype (IsString, Ord, ToString, ToText, FromJSON, ToJSON)
 
 -- | A part identifier.
 newtype PartID = PartID {unPartID :: Text}
   deriving stock (Show, Eq, Generic)
-  deriving newtype (IsString, ToString, ToText, FromJSON, ToJSON)
+  deriving newtype (IsString, Ord, ToString, ToText, FromJSON, ToJSON)
 
 -- | A workspace identifier.
 newtype WorkspaceID = WorkspaceID {unWorkspaceID :: Text}
   deriving stock (Show, Eq, Generic)
-  deriving newtype (IsString, ToString, ToText, FromJSON, ToJSON)
+  deriving newtype (IsString, Ord, ToString, ToText, FromJSON, ToJSON)
 
 -- | A model identifier (e.g., @litellm/glm-latest@, @openai/gpt-4@).
 newtype ModelID = ModelID {unModelID :: Text}
   deriving stock (Show, Eq, Generic)
-  deriving newtype (IsString, ToString, ToText, FromJSON, ToJSON)
+  deriving newtype (IsString, Ord, ToString, ToText, FromJSON, ToJSON)
 
 -- | Server health status.
 newtype Health = Health
