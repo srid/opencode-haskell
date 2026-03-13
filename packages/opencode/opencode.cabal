@@ -1,6 +1,6 @@
 cabal-version:      2.4
 name:               opencode
-version:            0.1.0.1
+version:            0.1.0.2
 license:            MIT
 copyright:          2026 Sridhar Ratnakumar
 maintainer:         srid@srid.ca

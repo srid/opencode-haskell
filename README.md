@@ -4,6 +4,8 @@
 
 Haskell client library for [OpenCode](https://github.com/anomalyco/opencode) server API.
 
+See the [OpenCode SDK docs](https://opencode.ai/docs/sdk/) for the full API reference.
+
 ## Usage
 
 ```haskell
@@ -18,7 +20,7 @@ main = do
   
   -- Create session and send message
   Right session <- createSession client Nothing (SessionCreateInput (Just "My Session") Nothing)
-  Right response <- sendMessage client session.id Nothing (MessageInput [textPartInput "Hello!"])
+  Right response <- promptSession client session.id Nothing (MessageInput [textPartInput "Hello!"])
   
   -- Clean up
   deleteSession client session.id Nothing

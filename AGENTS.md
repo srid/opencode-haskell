@@ -4,6 +4,10 @@
 
 All PRs must update the CHANGELOG.md file with a description of changes under the appropriate version section.
 
+## Version
+
+All PRs must increment the version in `packages/opencode/opencode.cabal` appropriately.
+
 ## Example
 
 The example in `packages/example/src/Main.hs` must demonstrate ALL API endpoints provided by the library. Run it with:
