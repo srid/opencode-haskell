@@ -35,7 +35,6 @@ main = Utf8.withUtf8 $ do
 
   putTextLn "\n--- Providers ---"
   providers <- onError =<< listProviders c
-  putTextLn $ "Default model: " <> show providers.defaultModel
   putTextLn $ "Total providers: " <> show (length providers.allProviders)
   putTextLn "Connected providers:"
   case providers.connected of

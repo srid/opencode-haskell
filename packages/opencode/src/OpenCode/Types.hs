@@ -42,6 +42,7 @@ module OpenCode.Types (
 where
 
 import Data.Aeson (FromJSON (..), Options (..), ToJSON (..), Value, defaultOptions, genericParseJSON, genericToJSON, withObject, (.:), (.:?))
+import Data.Map.Strict (Map)
 import Web.HttpApiData (FromHttpApiData (..), ToHttpApiData (..))
 
 jsonOptions :: Options
@@ -416,8 +417,8 @@ data ProvidersResponse = ProvidersResponse
   -- ^ All available providers.
   , connected :: Maybe [ProviderID]
   -- ^ IDs of connected providers.
-  , defaultModel :: Maybe ModelID
-  -- ^ Default model ID.
+  , defaultModel :: Maybe (Map ProviderID ModelID)
+  -- ^ Default model per provider.
   }
   deriving stock (Show, Eq, Generic)
 
