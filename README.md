@@ -15,7 +15,7 @@ main = do
   Right health <- getHealth client
   
   -- Create session and send message
-  Right session <- createSession client Nothing (SessionCreateInput Nothing Nothing)
+  Right session <- createSession client Nothing (SessionCreateInput (Just "My Session") Nothing)
   Right response <- sendMessage client session.id Nothing (MessageInput [textPartInput "Hello!"])
   
   -- Clean up

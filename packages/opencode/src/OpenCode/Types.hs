@@ -146,7 +146,7 @@ data Session = Session
   -- ^ ID of the project this session belongs to.
   , workspaceID :: Maybe WorkspaceID
   -- ^ Optional workspace ID.
-  , directory :: Text
+  , directory :: FilePath
   -- ^ Working directory for the session.
   , parentID :: Maybe SessionID
   -- ^ Parent session ID (for forked sessions).
