@@ -69,22 +69,27 @@ data OpenCodeClient = OpenCodeClient
   { getHealth :: IO (Either ClientError Health)
   -- ^ Check if the server is healthy. Calls @GET \/global\/health@.
   , listSessions :: Maybe FilePath -> IO (Either ClientError [Session])
-  {- ^ List all sessions. Optionally filter by directory.
-  Calls @GET \/session?directory=...@.
+  {- ^ List all sessions.
+
+  The @FilePath@ argument filters by working directory context.
+  Pass 'Nothing' to list all sessions regardless of directory.
   -}
   , createSession :: Maybe FilePath -> SessionCreateInput -> IO (Either ClientError Session)
-  {- ^ Create a new session. Optionally specify directory.
-  Calls @POST \/session@.
+  {- ^ Create a new session.
+
+  The @FilePath@ argument sets the working directory context for the session.
+  This determines which project/files the LLM will operate on.
+  Pass 'Nothing' to use the server's current directory.
   -}
   , getSession :: SessionID -> Maybe FilePath -> IO (Either ClientError Session)
-  -- ^ Get a session by ID. Calls @GET \/session\/{sessionID}@.
+  -- ^ Get a session by ID. The @FilePath@ is the working directory context.
   , deleteSession :: SessionID -> Maybe FilePath -> IO (Either ClientError Bool)
-  -- ^ Delete a session by ID. Calls @DELETE \/session\/{sessionID}@.
+  -- ^ Delete a session by ID. The @FilePath@ is the working directory context.
   , sendMessage :: SessionID -> Maybe FilePath -> MessageInput -> IO (Either ClientError MessageResponse)
-  {- ^ Send a message to a session. Calls @POST \/session\/{sessionID}\/message@.
+  {- ^ Send a message to a session.
 
-  >>> sendMessage client "ses_xxx" Nothing (MessageInput [textPartInput "Hello"])
-  Right (MessageResponse {...})
+  The @FilePath@ argument is the working directory context for the request.
+  Pass 'Nothing' to use the session's existing directory.
   -}
   , listProjects :: IO (Either ClientError [Project])
   -- ^ List all projects. Calls @GET \/project@.
