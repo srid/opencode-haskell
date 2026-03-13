@@ -4,6 +4,8 @@
 
 All PRs must update the `packages/opencode/CHANGELOG.md` file with a description of changes under the appropriate version section.
 
+Only document user-facing changes (API additions/changes/breaking changes, bug fixes). Do not document internal improvements like documentation, refactoring, or test additions.
+
 ## Version
 
 All PRs must increment the version in `packages/opencode/opencode.cabal` appropriately.
