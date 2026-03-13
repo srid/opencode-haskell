@@ -10,6 +10,8 @@ Only document user-facing changes (API additions/changes/breaking changes, bug f
 
 All PRs must increment the version in `packages/opencode/opencode.cabal` appropriately.
 
+Only increment the version if the changelog has no "Unreleased" section for the latest version. When creating a new version entry in the changelog, mark it as `[Unreleased]` to allow subsequent PRs to add entries before release.
+
 ## Example
 
 The example in `packages/example/src/Main.hs` must demonstrate ALL API endpoints provided by the library. Run it with:
