@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Fix homepage URL to `https://github.com/srid/opencode-haskell`
 
-## [0.1.0.0] - 2026-03-09
+## [0.1.0.0] - 2026-03-13
 
 ### Added
 
