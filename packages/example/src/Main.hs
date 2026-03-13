@@ -34,7 +34,7 @@ main = Utf8.withUtf8 $ do
     Left err -> fail $ "Failed to create session: " <> show err
     Right s -> pure s
   
-  putTextLn $ "Created session: " <> session.id
+  putTextLn $ "Created session: " <> unSessionID session.id
   putTextLn "Sending prompt: 'What is 2+2? Answer briefly.'"
   msgResult <- sendMessage c session.id Nothing (MessageInput [textPartInput "What is 2+2? Answer briefly."])
   response <- case msgResult of
@@ -47,7 +47,7 @@ main = Utf8.withUtf8 $ do
     PartOther _ -> pure ()
   
   putTextLn "\n--- Cleaning up ---"
-  putTextLn $ "Deleting session: " <> session.id
+  putTextLn $ "Deleting session: " <> unSessionID session.id
   deleteResult <- deleteSession c session.id Nothing
   case deleteResult of
     Left err -> putTextLn $ "Warning: Failed to delete session: " <> show err

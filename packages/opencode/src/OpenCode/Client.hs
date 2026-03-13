@@ -26,11 +26,11 @@ type SessionListAPI = "session" :> QueryParam "directory" Text :> Get '[JSON] [S
 
 type SessionCreateAPI = "session" :> QueryParam "directory" Text :> ReqBody '[JSON] SessionCreateInput :> Post '[JSON] Session
 
-type SessionGetAPI = "session" :> Capture "sessionID" Text :> QueryParam "directory" Text :> Get '[JSON] Session
+type SessionGetAPI = "session" :> Capture "sessionID" SessionID :> QueryParam "directory" Text :> Get '[JSON] Session
 
-type SessionDeleteAPI = "session" :> Capture "sessionID" Text :> QueryParam "directory" Text :> Delete '[JSON] Bool
+type SessionDeleteAPI = "session" :> Capture "sessionID" SessionID :> QueryParam "directory" Text :> Delete '[JSON] Bool
 
-type MessageAPI = "session" :> Capture "sessionID" Text :> "message" :> QueryParam "directory" Text :> ReqBody '[JSON] MessageInput :> Post '[JSON] MessageResponse
+type MessageAPI = "session" :> Capture "sessionID" SessionID :> "message" :> QueryParam "directory" Text :> ReqBody '[JSON] MessageInput :> Post '[JSON] MessageResponse
 
 type ProjectListAPI = "project" :> Get '[JSON] [Project]
 
@@ -71,11 +71,11 @@ data OpenCodeClient = OpenCodeClient
   , createSession :: Maybe Text -> SessionCreateInput -> IO (Either ClientError Session)
     -- ^ Create a new session. Optionally specify directory.
     -- Calls @POST \/session@.
-  , getSession :: Text -> Maybe Text -> IO (Either ClientError Session)
+  , getSession :: SessionID -> Maybe Text -> IO (Either ClientError Session)
     -- ^ Get a session by ID. Calls @GET \/session\/{sessionID}@.
-  , deleteSession :: Text -> Maybe Text -> IO (Either ClientError Bool)
+  , deleteSession :: SessionID -> Maybe Text -> IO (Either ClientError Bool)
     -- ^ Delete a session by ID. Calls @DELETE \/session\/{sessionID}@.
-  , sendMessage :: Text -> Maybe Text -> MessageInput -> IO (Either ClientError MessageResponse)
+  , sendMessage :: SessionID -> Maybe Text -> MessageInput -> IO (Either ClientError MessageResponse)
     -- ^ Send a message to a session. Calls @POST \/session\/{sessionID}\/message@.
     --
     -- >>> sendMessage client "ses_xxx" Nothing (MessageInput [textPartInput "Hello"])

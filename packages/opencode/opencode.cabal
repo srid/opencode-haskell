@@ -51,6 +51,7 @@ library
     , aeson
     , base
     , bytestring
+    , http-api-data
     , http-client
     , http-client-tls
     , http-types

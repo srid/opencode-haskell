@@ -10,7 +10,15 @@ This module provides the data types used by the OpenCode server API.
 All types derive 'FromJSON' and 'ToJSON' for serialization.
 -}
 module OpenCode.Types
-  ( Health(..)
+  ( -- * IDs
+    SessionID(..)
+  , MessageID(..)
+  , ProjectID(..)
+  , ProviderID(..)
+  , PartID(..)
+  , WorkspaceID(..)
+    -- * Core types
+  , Health(..)
   , Session(..)
   , SessionTime(..)
   , SessionSummary(..)
@@ -31,10 +39,71 @@ module OpenCode.Types
   )
 where
 
-import Data.Aeson (FromJSON(..), ToJSON(..), genericParseJSON, genericToJSON, (.:), (.:?), withObject, Options(..), defaultOptions, Value)
+import Data.Aeson (FromJSON(..), ToJSON(..), genericParseJSON, genericToJSON, (.:), (.:?), withObject, Options(..), defaultOptions, Value, withText)
+import Web.HttpApiData (ToHttpApiData(..), FromHttpApiData(..))
 
 jsonOptions :: Options
 jsonOptions = defaultOptions { fieldLabelModifier = \x -> x }
+
+-- | A session identifier (e.g., @ses_xxx@).
+newtype SessionID = SessionID { unSessionID :: Text }
+  deriving stock (Show, Eq, Generic)
+  deriving newtype (IsString, ToHttpApiData, FromHttpApiData)
+
+instance FromJSON SessionID where
+  parseJSON = withText "SessionID" (pure . SessionID)
+instance ToJSON SessionID where
+  toJSON (SessionID t) = toJSON t
+
+-- | A message identifier (e.g., @msg_xxx@).
+newtype MessageID = MessageID { unMessageID :: Text }
+  deriving stock (Show, Eq, Generic)
+  deriving newtype (IsString)
+
+instance FromJSON MessageID where
+  parseJSON = withText "MessageID" (pure . MessageID)
+instance ToJSON MessageID where
+  toJSON (MessageID t) = toJSON t
+
+-- | A project identifier.
+newtype ProjectID = ProjectID { unProjectID :: Text }
+  deriving stock (Show, Eq, Generic)
+  deriving newtype (IsString)
+
+instance FromJSON ProjectID where
+  parseJSON = withText "ProjectID" (pure . ProjectID)
+instance ToJSON ProjectID where
+  toJSON (ProjectID t) = toJSON t
+
+-- | A provider identifier (e.g., @openai@, @anthropic@).
+newtype ProviderID = ProviderID { unProviderID :: Text }
+  deriving stock (Show, Eq, Generic)
+  deriving newtype (IsString)
+
+instance FromJSON ProviderID where
+  parseJSON = withText "ProviderID" (pure . ProviderID)
+instance ToJSON ProviderID where
+  toJSON (ProviderID t) = toJSON t
+
+-- | A part identifier.
+newtype PartID = PartID { unPartID :: Text }
+  deriving stock (Show, Eq, Generic)
+  deriving newtype (IsString)
+
+instance FromJSON PartID where
+  parseJSON = withText "PartID" (pure . PartID)
+instance ToJSON PartID where
+  toJSON (PartID t) = toJSON t
+
+-- | A workspace identifier.
+newtype WorkspaceID = WorkspaceID { unWorkspaceID :: Text }
+  deriving stock (Show, Eq, Generic)
+  deriving newtype (IsString)
+
+instance FromJSON WorkspaceID where
+  parseJSON = withText "WorkspaceID" (pure . WorkspaceID)
+instance ToJSON WorkspaceID where
+  toJSON (WorkspaceID t) = toJSON t
 
 -- | Server health status.
 newtype Health = Health
@@ -91,17 +160,17 @@ instance ToJSON SessionSummary where
 
 -- | An OpenCode session.
 data Session = Session
-  { id :: Text
-    -- ^ Unique session identifier (e.g., @ses_xxx@).
+  { id :: SessionID
+    -- ^ Unique session identifier.
   , slug :: Text
     -- ^ URL-friendly slug.
-  , projectID :: Text
+  , projectID :: ProjectID
     -- ^ ID of the project this session belongs to.
-  , workspaceID :: Maybe Text
+  , workspaceID :: Maybe WorkspaceID
     -- ^ Optional workspace ID.
   , directory :: Text
     -- ^ Working directory for the session.
-  , parentID :: Maybe Text
+  , parentID :: Maybe SessionID
     -- ^ Parent session ID (for forked sessions).
   , title :: Text
     -- ^ Session title.
@@ -115,13 +184,23 @@ data Session = Session
   deriving stock (Show, Eq, Generic)
 
 instance FromJSON Session where
-  parseJSON = genericParseJSON $ jsonOptions
+  parseJSON = withObject "Session" $ \v -> Session
+    <$> v .: "id"
+    <*> v .: "slug"
+    <*> v .: "projectID"
+    <*> v .:? "workspaceID"
+    <*> v .: "directory"
+    <*> v .:? "parentID"
+    <*> v .: "title"
+    <*> v .: "version"
+    <*> v .: "time"
+    <*> v .:? "summary"
 instance ToJSON Session where
   toJSON = genericToJSON $ jsonOptions
 
 -- | A text part in a message (from the server).
 data TextPart = TextPart
-  { id :: Maybe Text
+  { id :: Maybe PartID
     -- ^ Optional part ID.
   , text :: Text
     -- ^ The text content.
@@ -185,9 +264,9 @@ instance ToJSON Part where
 
 -- | A message from the user.
 data UserMessage = UserMessage
-  { id :: Text
+  { id :: MessageID
     -- ^ Message ID.
-  , sessionID :: Text
+  , sessionID :: SessionID
     -- ^ Session ID.
   , parts :: [Part]
     -- ^ Message parts.
@@ -197,15 +276,19 @@ data UserMessage = UserMessage
   deriving stock (Show, Eq, Generic)
 
 instance FromJSON UserMessage where
-  parseJSON = genericParseJSON $ jsonOptions
+  parseJSON = withObject "UserMessage" $ \v -> UserMessage
+    <$> v .: "id"
+    <*> v .: "sessionID"
+    <*> v .: "parts"
+    <*> v .: "time"
 instance ToJSON UserMessage where
   toJSON = genericToJSON $ jsonOptions
 
 -- | A message from the assistant.
 data AssistantMessage = AssistantMessage
-  { id :: Text
+  { id :: MessageID
     -- ^ Message ID.
-  , sessionID :: Text
+  , sessionID :: SessionID
     -- ^ Session ID.
   , time :: Maybe SessionTime
     -- ^ Optional timestamps.
@@ -268,19 +351,21 @@ instance ToJSON MessageResponse where
 data SessionCreateInput = SessionCreateInput
   { title :: Maybe Text
     -- ^ Optional session title.
-  , parentID :: Maybe Text
+  , parentID :: Maybe SessionID
     -- ^ Optional parent session ID (for forking).
   }
   deriving stock (Show, Eq, Generic)
 
 instance FromJSON SessionCreateInput where
-  parseJSON = genericParseJSON jsonOptions
+  parseJSON = withObject "SessionCreateInput" $ \v -> SessionCreateInput
+    <$> v .:? "title"
+    <*> v .:? "parentID"
 instance ToJSON SessionCreateInput where
   toJSON = genericToJSON jsonOptions { omitNothingFields = True }
 
 -- | An OpenCode project.
 data Project = Project
-  { id :: Text
+  { id :: ProjectID
     -- ^ Project ID.
   , worktree :: Text
     -- ^ Path to the worktree.
@@ -290,7 +375,10 @@ data Project = Project
   deriving stock (Show, Eq, Generic)
 
 instance FromJSON Project where
-  parseJSON = genericParseJSON $ jsonOptions
+  parseJSON = withObject "Project" $ \v -> Project
+    <$> v .: "id"
+    <*> v .: "worktree"
+    <*> v .:? "vcs"
 instance ToJSON Project where
   toJSON = genericToJSON $ jsonOptions
 
@@ -308,8 +396,8 @@ instance ToJSON Config where
 
 -- | An AI provider.
 data Provider = Provider
-  { id :: Text
-    -- ^ Provider ID (e.g., @\"openai\"@, @\"anthropic\"@).
+  { id :: ProviderID
+    -- ^ Provider ID (e.g., @openai@, @anthropic@).
   , name :: Text
     -- ^ Human-readable name.
   , source :: Maybe Text
