@@ -10,9 +10,9 @@ docs:
 repl *ARGS:
     cabal repl {{ ARGS }}
 
-# Run ghcid -- auto-recompile and run `main` function
+# Run ghcid -- auto-recompile
 run:
-    ghcid -T :main
+    ghcid
 
 # Run the example against the OpenCode server (uses tailscale IP by default)
 example *ARGS:

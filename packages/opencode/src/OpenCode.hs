@@ -1,4 +1,4 @@
-{-|
+{- |
 Module      : OpenCode
 Description : Haskell client library for OpenCode server API
 Copyright   : (c) 2026 Sridhar Ratnakumar
@@ -17,21 +17,21 @@ import OpenCode
 main :: IO ()
 main = do
   client <- mkClient "localhost" 4096
-  
+
   -- Check server health
   health <- getHealth client
   print health
-  
+
   -- Create a session and send a message
   session <- createSession client Nothing (SessionCreateInput Nothing Nothing)
   response <- sendMessage client session.id Nothing (MessageInput [textPartInput "Hello!"])
   print response
 @
 -}
-module OpenCode
-  ( module OpenCode.Types
-  , module OpenCode.Client
-  )
+module OpenCode (
+  module OpenCode.Types,
+  module OpenCode.Client,
+)
 where
 
 import OpenCode.Client

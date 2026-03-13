@@ -1,13 +1,13 @@
-cabal-version:      2.4
-name:               opencode
-version:            0.1.0.0
-license:            MIT
-copyright:          2026 Sridhar Ratnakumar
-maintainer:         srid@srid.ca
-author:             Sridhar Ratnakumar
-category:           Web
-homepage:           https://github.com/anomalyco/opencode
-synopsis:           Haskell client library for OpenCode server API
+cabal-version: 2.4
+name:          opencode
+version:       0.1.0.0
+license:       MIT
+copyright:     2026 Sridhar Ratnakumar
+maintainer:    srid@srid.ca
+author:        Sridhar Ratnakumar
+category:      Web
+homepage:      https://github.com/anomalyco/opencode
+synopsis:      Haskell client library for OpenCode server API
 
 common shared
   ghc-options:
@@ -36,17 +36,18 @@ common shared
 
   build-depends:
     , aeson
-    , base          >=4   && <5
-    , relude        >=1.0
+    , base    >=4   && <5
+    , relude  >=1.0
 
   default-language:   GHC2021
 
 library
-  import:  shared
+  import:          shared
   exposed-modules:
     OpenCode
-    OpenCode.Types
     OpenCode.Client
+    OpenCode.Types
+
   build-depends:
     , aeson
     , base
@@ -61,4 +62,5 @@ library
     , servant-client
     , servant-client-core
     , text
-  hs-source-dirs:     src
+
+  hs-source-dirs:  src

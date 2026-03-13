@@ -15,8 +15,7 @@
         ];
       };
 
-      packages = {
-      };
+      packages = { };
 
       settings = {
         opencode = {

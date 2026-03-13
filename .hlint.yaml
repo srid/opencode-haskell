@@ -1,5 +1,7 @@
 # Repo-specific hlint rules go here:
 - ignore: { name: Use camelCase }
+# False positive with DuplicateRecordFields + OverloadedRecordDot: session.id looks like function composition to hlint
+- ignore: { name: Redundant id, within: [Main] }
 
 # Relude's .hlint.yaml goes here:
 - arguments:
