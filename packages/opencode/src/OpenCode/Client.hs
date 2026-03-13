@@ -27,13 +27,13 @@ type HealthAPI = "global" :> "health" :> Get '[JSON] Health
 type SessionMemberAPI =
   Get '[JSON] Session
     :<|> Delete '[JSON] Bool
-    :<|> "message" :> QueryParam "directory" Text :> ReqBody '[JSON] MessageInput :> Post '[JSON] MessageResponse
+    :<|> "message" :> QueryParam "directory" FilePath :> ReqBody '[JSON] MessageInput :> Post '[JSON] MessageResponse
 
 -- | Grouped Session routes.
 type SessionAPI =
-  QueryParam "directory" Text :> Get '[JSON] [Session]
-    :<|> QueryParam "directory" Text :> ReqBody '[JSON] SessionCreateInput :> Post '[JSON] Session
-    :<|> Capture "sessionID" SessionID :> QueryParam "directory" Text :> SessionMemberAPI
+  QueryParam "directory" FilePath :> Get '[JSON] [Session]
+    :<|> QueryParam "directory" FilePath :> ReqBody '[JSON] SessionCreateInput :> Post '[JSON] Session
+    :<|> Capture "sessionID" SessionID :> QueryParam "directory" FilePath :> SessionMemberAPI
 
 -- | Grouped Project routes.
 type ProjectAPI =
@@ -68,19 +68,19 @@ Right (Health {healthy = True})
 data OpenCodeClient = OpenCodeClient
   { getHealth :: IO (Either ClientError Health)
   -- ^ Check if the server is healthy. Calls @GET \/global\/health@.
-  , listSessions :: Maybe Text -> IO (Either ClientError [Session])
+  , listSessions :: Maybe FilePath -> IO (Either ClientError [Session])
   {- ^ List all sessions. Optionally filter by directory.
   Calls @GET \/session?directory=...@.
   -}
-  , createSession :: Maybe Text -> SessionCreateInput -> IO (Either ClientError Session)
+  , createSession :: Maybe FilePath -> SessionCreateInput -> IO (Either ClientError Session)
   {- ^ Create a new session. Optionally specify directory.
   Calls @POST \/session@.
   -}
-  , getSession :: SessionID -> Maybe Text -> IO (Either ClientError Session)
+  , getSession :: SessionID -> Maybe FilePath -> IO (Either ClientError Session)
   -- ^ Get a session by ID. Calls @GET \/session\/{sessionID}@.
-  , deleteSession :: SessionID -> Maybe Text -> IO (Either ClientError Bool)
+  , deleteSession :: SessionID -> Maybe FilePath -> IO (Either ClientError Bool)
   -- ^ Delete a session by ID. Calls @DELETE \/session\/{sessionID}@.
-  , sendMessage :: SessionID -> Maybe Text -> MessageInput -> IO (Either ClientError MessageResponse)
+  , sendMessage :: SessionID -> Maybe FilePath -> MessageInput -> IO (Either ClientError MessageResponse)
   {- ^ Send a message to a session. Calls @POST \/session\/{sessionID}\/message@.
 
   >>> sendMessage client "ses_xxx" Nothing (MessageInput [textPartInput "Hello"])
