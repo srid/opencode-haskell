@@ -3,6 +3,7 @@ module Main where
 import Data.Map.Strict qualified as Map
 import Main.Utf8 qualified as Utf8
 import OpenCode
+import Shower (shower)
 
 onError :: (Show e) => Either e a -> IO a
 onError = either (fail . show) pure
@@ -82,7 +83,7 @@ main = Utf8.withUtf8 $ do
   putTextLn "Response:"
   forM_ response.parts $ \case
     PartText tp -> putTextLn $ "  " <> tp.text
-    PartOther _ -> pass
+    PartOther v -> putTextLn $ "  [other] " <> toText (shower v)
 
   putTextLn "\n--- Delete Session ---"
   deleted <- onError =<< deleteSession c (session.id) Nothing

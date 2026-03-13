@@ -50,6 +50,7 @@ executable opencode-example
     , base
     , opencode
     , relude
+    , shower
     , text
     , with-utf8
 
