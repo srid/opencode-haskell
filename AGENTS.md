@@ -1,5 +1,9 @@
 # Agent Notes
 
+## Changelog
+
+All PRs must update the CHANGELOG.md file with a description of changes under the appropriate version section.
+
 ## Example
 
 The example in `packages/example/src/Main.hs` must demonstrate ALL API endpoints provided by the library. Run it with:
