@@ -414,8 +414,8 @@ instance ToJSON Provider where
 data ProvidersResponse = ProvidersResponse
   { allProviders :: [Provider]
   -- ^ All available providers.
-  , connected :: Maybe [Provider]
-  -- ^ Connected providers.
+  , connected :: Maybe [ProviderID]
+  -- ^ IDs of connected providers.
   , defaultModel :: Maybe ModelID
   -- ^ Default model ID.
   }

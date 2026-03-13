@@ -36,11 +36,12 @@ main = Utf8.withUtf8 $ do
   putTextLn "\n--- Providers ---"
   providers <- onError =<< listProviders c
   putTextLn $ "Default model: " <> show providers.defaultModel
+  putTextLn $ "Total providers: " <> show (length providers.allProviders)
   putTextLn "Connected providers:"
   case providers.connected of
     Nothing -> putTextLn "  (none)"
-    Just conns -> forM_ conns $ \p ->
-      putTextLn $ "  " <> toText (p.id) <> " (" <> p.name <> ")"
+    Just conns -> forM_ conns $ \pid ->
+      putTextLn $ "  " <> toText pid
 
   putTextLn "\n--- Projects ---"
   projects <- onError =<< listProjects c
