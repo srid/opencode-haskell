@@ -53,8 +53,11 @@ main = Utf8.withUtf8 $ do
   putTextLn $ "Current: " <> toText (currentProj.id) <> " at " <> toText currentProj.worktree
 
   putTextLn "\n--- Sessions by Project ---"
-  sessions <- onError =<< listSessions c Nothing
-  let byProject = Map.fromListWith (++) [(s.projectID, [s]) | s <- sessions]
+  allSessions <- fmap concat $ forM projects $ \p -> do
+    sess <- listSessions c (Just p.worktree)
+    pure $ fromRight [] sess
+
+  let byProject = Map.fromListWith (++) [(s.projectID, [s]) | s <- allSessions]
 
   if Map.null byProject
     then putTextLn "No sessions found."
