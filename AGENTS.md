@@ -2,7 +2,7 @@
 
 ## Changelog
 
-All PRs must update the CHANGELOG.md file with a description of changes under the appropriate version section.
+All PRs must update the `packages/opencode/CHANGELOG.md` file with a description of changes under the appropriate version section.
 
 ## Version
 
@@ -21,3 +21,5 @@ When adding new API endpoints, update the example accordingly.
 ## Type Accuracy
 
 Types in `OpenCode.Types` must match the actual JSON from the OpenCode server API. If parsing fails, check the actual API response with curl and update types accordingly.
+
+All type fields must have Haddock documentation comments explaining their purpose.

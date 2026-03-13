@@ -86,7 +86,9 @@ newtype ModelID = ModelID {unModelID :: Text}
 -- | Server health status.
 data Health = Health
   { healthy :: Bool
+  -- ^ Whether the server is healthy.
   , version :: Text
+  -- ^ Server version string.
   }
   deriving stock (Show, Eq, Generic)
 
